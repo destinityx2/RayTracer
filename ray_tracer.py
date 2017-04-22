@@ -43,8 +43,8 @@ class RayTracer:
     def _trace_ray(self, ray, calc_color, tol):
         """
         :param ray: object of type Ray
-        :param calc_color: function, which takes Hit object as parameter and return color of object in this point
-        :return: result of execution calc_result function
+        :param calc_color: function, which takes Hit object as parameter and returns color of object in this point
+        :return: result of execution calc_color function
         """
 
         min_dist = 1e8
