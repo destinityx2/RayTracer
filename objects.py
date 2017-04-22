@@ -5,9 +5,10 @@ from primitives import Hit
 
 
 class Object:
-    def intersect(self, ray):
+    def intersect(self, ray, tol):
         """
         :param ray: object of type Ray
+        :param tol: tolerance (typical value: 10^{-3})
         :return: object of type Hit if there is intersection, None otherwise
         """
         raise RuntimeError("Unsupported operation")
@@ -18,7 +19,7 @@ class Sphere(Object):
         self.radius = radius
         self.origin = origin
 
-    def intersect(self, ray):
+    def intersect(self, ray, tol):
         origin = ray.origin - self.origin
 
         # a = 1 in case when ray.direction is unit length
@@ -35,9 +36,9 @@ class Sphere(Object):
         t_2 = (-b + delta_sqrt) / (2 * a)
 
         hit_point = None
-        if t_1 > 0:
+        if t_1 > tol:
             hit_point = ray.point(t_1)
-        elif t_2 > 0:
+        elif t_2 > tol:
             hit_point = ray.point(t_2)
         else:
             return None
@@ -52,7 +53,7 @@ class Plane(Object):
         self.origin = origin
         self.normal = normal
 
-    def intersect(self, ray):
+    def intersect(self, ray, tol):
         D = -np.dot(self.origin, self.normal)
 
         denominator = np.dot(self.normal, ray.direction)
@@ -61,6 +62,9 @@ class Plane(Object):
             return None
 
         t = -(D + np.dot(self.normal, ray.origin)) / denominator
+
+        if t < tol:
+            return None
 
         return Hit(ray.point(t), self.normal, ray, self)
 
@@ -71,7 +75,7 @@ class Triangle(Object):
         self.p1 = p1
         self.p2 = p2
 
-    def intersect(self, ray):
+    def intersect(self, ray, tol):
         col1 = self.p0 - self.p1
         col2 = self.p0 - self.p2
         col3 = ray.direction

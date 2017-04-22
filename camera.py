@@ -13,10 +13,15 @@ class Camera:
         self.resolution_y = resolution_y
 
     def get_ray(self, point):
-        d = 1 / np.tan(self.fov_angle / 2)
+        """
+        :param point: point of type tuple (x: float, y: float), where -1 <= x, y <= 1
+        :return:
+        """
+        fov_x, fov_y = self.fov_angle
+        d = 1 / np.tan(fov_x / 2)
         x, y = point
         u, v, w = self.direction
-        aspect = self.resolution_y / self.resolution_x
+        aspect = fov_y / fov_x
 
         direction = x * u + aspect * y * v + d * w
         normalized_direction = direction / np.sqrt(np.dot(direction, direction))
