@@ -37,7 +37,7 @@ tracer = RayTracer(scene, camera)
 
 # calc_dist = lambda hit: calculate_distance(hit, 10)
 # res_img = tracer.run(calc_dist)
-# plt.imsave('result.bmp', res_img, cmap=cm.gray)
-#
+# plt.imsave('result.png', res_img, cmap=cm.gray)
+
 res_img = tracer.run(calculate_normal, 3)
-plt.imsave('result.bmp', res_img)
+plt.imsave('result.png', res_img)
