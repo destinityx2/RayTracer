@@ -2,6 +2,14 @@ __author__ = 'ivan'
 
 import numpy as np
 from primitives import Ray
+from objects import Triangle
+
+
+def calculate_object_color(hit):
+    if hit is None:
+        return np.array([0, 0, 0])
+
+    return hit.object.color
 
 
 def calculate_normal(hit):
@@ -31,14 +39,14 @@ class RayTracer:
     def _trace_shadow_ray(self, ray, tol):
         """
         :param ray: ray to cast
-        :return: True, if ray doesn't intersect with objects, false otherwise
+        :return: hit, if ray intersects with some object, None otherwise
         """
         for obj in self.scene.objects:
             hit = obj.intersect(ray, tol)
             if hit is not None:
-                return False
+                return hit
 
-        return True
+        return None
 
     def _trace_ray(self, ray, calc_color, tol):
         """
@@ -68,7 +76,9 @@ class RayTracer:
         if min_hit is not None:
             for light in self.scene.lights:
                 ray = Ray(min_hit.point, light.origin - min_hit.point)
-                if self._trace_shadow_ray(ray, tol):
+                shadow_hit = self._trace_shadow_ray(ray, tol)
+
+                if shadow_hit is None:
                     res_shading += light.get_intensity(ray) * obj_color
 
         return res_shading

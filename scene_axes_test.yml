@@ -1,0 +1,31 @@
+# Все углы задаются в градусах
+
+# Камера
+camera:
+   position: {x: 0, y: 0, z: 0}
+   orientation: {h: 0, p: 0, r: 0}
+   fov_x: 45
+   fov_y: 45
+   near_clip: 0.1
+
+# Иерархия сцены
+scene:
+   - node:
+      - lcs : {x: 0, y: 0, z: 5, h: 0, p: 0, r: 0}
+      - sphere: {r: 1}
+      - material:
+         color: {r: 1, g: 0.5, b: 0}
+      - node:
+         - lcs : {x: 0, y: 0, z: 2, h: 0, p: 0, r: 0}
+         - plane: {normal_x: 0, normal_y: 0, normal_z: -1}
+         - material:
+            color: {r: 0.1, g: 0.5, b: 0}
+      - node:
+         - lcs : {x: 0, y: 0, z: 1, h: 0, p: 0, r: 0}
+         - triangle: {x0: 0, y0: 0, z0: 0, x1: 0, y1: 2, z1: 0, x2: 2, y2: 0, z2: 0}
+         - material:
+            color: {r: 0.2, g: 0.5, b: 0.8}
+
+# Освещение
+lights:
+   - pointLight: {x: 0, y: 0, z: 0, intensity: 1}

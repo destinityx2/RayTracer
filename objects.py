@@ -88,6 +88,9 @@ class Triangle(Object):
         gamma = x[1]
         t = x[2]
 
+        if t < tol:
+            return None
+
         if beta > 0 and gamma > 0 and beta + gamma < 1:
             norm = np.cross(self.p1 - self.p0, self.p2 - self.p0)
             norm = norm / np.sqrt(np.dot(norm, norm))

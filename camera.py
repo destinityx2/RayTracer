@@ -23,8 +23,8 @@ class Camera:
         u, v, w = self.direction
         aspect = fov_y / fov_x
 
-        direction = x * u + aspect * y * v + d * w
-        normalized_direction = direction / np.sqrt(np.dot(direction, direction))
+        dir = x * u + aspect * y * v + d * w
+        normalized_direction = dir / np.sqrt(np.dot(dir, dir))
 
         return Ray(self.origin, normalized_direction)
 
