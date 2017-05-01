@@ -66,7 +66,11 @@ class Plane(Object):
         if t < tol:
             return None
 
-        return Hit(ray.point(t), self.normal, ray, self)
+        normal = self.normal
+        if np.dot(normal, ray.direction) > 0:
+            normal *= -1
+
+        return Hit(ray.point(t), normal, ray, self)
 
 
 class Triangle(Object):
@@ -94,6 +98,9 @@ class Triangle(Object):
         if beta > 0 and gamma > 0 and beta + gamma < 1:
             norm = np.cross(self.p1 - self.p0, self.p2 - self.p0)
             norm = norm / np.sqrt(np.dot(norm, norm))
+            if np.dot(norm, ray.direction) > 0:
+                norm *= -1
+
             return Hit(ray.point(t), norm, ray, self)
 
         return None

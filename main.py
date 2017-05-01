@@ -1,41 +1,38 @@
 __author__ = 'ivan'
 
-import numpy as np
-from parser import parse_camera_scene
-from scene import Scene
-from objects import Sphere, Plane, Triangle
-from ray_tracer import RayTracer, calculate_distance, calculate_normal, calculate_object_color
-from camera import Camera
-from lights import PointLight
+import argparse
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
+from parser import parse_camera_scene
+from ray_tracer import RayTracer, calculate_distance, calculate_normal, calculate_object_color
 
-camera, scene = parse_camera_scene('scene_axes_test.yml')
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument('--scene', help='path to the scene', action='store', dest='scene', required=True)
+arg_parser.add_argument('--output', action='store', dest='output', required=True)
+arg_parser.add_argument('--resolution_x', action='store', dest='resolution_x', type=int, default=100)
+arg_parser.add_argument('--resolution_y', action='store', dest='resolution_y', type=int, default=100)
+arg_parser.add_argument('--trace_depth', action='store', dest='trace_depth', type=int, default=0)
+arg_parser.add_argument('--normal_as_color', action='store_true', default=False)
+arg_parser.add_argument('--distance_as_color', action='store_true', default=False)
+arg_parser.add_argument('--dist_range', action='store', dest='dist_range', type=int)
 
-# obj1 = Sphere(0.3, np.array((0, 0, 2)))
-# obj2 = Sphere(0.3, np.array((0, 1, 2)))
-# obj3 = Plane(np.array((0, 0, 4)), np.array((0, 0, 1)))
-# obj4 = Triangle(np.array((0, 1, 3)), n    p.array((1, -1, 3)), np.array((3, -2, 3)))
-# objects = [obj1, obj2, obj3, obj4]
-#
-# light1 = PointLight(np.array((0, 1, -1)), 0.5)
-#
-# lights = [light1]
-#
-# scene = Scene(objects, lights)
-#
-# camera = Camera(np.array((0, 0, 0)), np.array(((1, 0, 0), (0, 1, 0), (0, 0, 1))), (45, 45), 200, 200)
+args = arg_parser.parse_args()
+
+camera, scene = parse_camera_scene(args.scene)
 
 tracer = RayTracer(scene, camera)
+camera.resolution_x = args.resolution_x
+camera.resolution_y = args.resolution_y
 
-# calc_dist = lambda hit: calculate_distance(hit, 10)
-# res_img = tracer.run(calc_dist)
-# plt.imsave('result.png', res_img, cmap=cm.gray)
-
-# res_img = tracer.run(calculate_normal, 3)
-# plt.imsave('result.png', res_img)
-
-res_img = tracer.run(calculate_object_color, 3)
-plt.imsave('result.png', res_img)
+if args.normal_as_color:
+    res_img = tracer.run(calculate_normal, 3)
+    plt.imsave(args.output, res_img)
+elif args.distance_as_color:
+    calc_dist = lambda hit: calculate_distance(hit, args.dist_range)
+    res_img = tracer.run(calc_dist)
+    plt.imsave(args.output, res_img, cmap=cm.gray)
+else:
+    res_img = tracer.run(calculate_object_color, 3, camera.near_clip, tracing_depth=args.trace_depth)
+    plt.imsave(args.output, res_img)

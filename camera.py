@@ -5,12 +5,13 @@ from primitives import Ray
 
 
 class Camera:
-    def __init__(self, origin, direction, fov_angle, resolution_x, resolution_y):
+    def __init__(self, origin, direction, fov_angle, resolution_x, resolution_y, near_clip):
         self.origin = origin
         self.direction = direction
         self.fov_angle = fov_angle
         self.resolution_x = resolution_x
         self.resolution_y = resolution_y
+        self.near_clip = near_clip
 
     def get_ray(self, point):
         """

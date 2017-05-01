@@ -155,7 +155,7 @@ def _parse_camera(camera_yml):
     v = tr_matr.dot(np.array([0, 1, 0, 0]))[:3]
     w = tr_matr.dot(np.array([0, 0, 1, 0]))[:3]
 
-    return Camera(np.array((x, y, z)), np.array((u, v, w)), (fov_x, fov_y), DEFAULT_X_RESOLUTION, DEFAULT_Y_RESOLUTION)
+    return Camera(np.array((x, y, z)), np.array((u, v, w)), (fov_x, fov_y), DEFAULT_X_RESOLUTION, DEFAULT_Y_RESOLUTION, near_clip)
 
 
 def parse_camera_scene(filepath):
