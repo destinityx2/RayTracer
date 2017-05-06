@@ -22,7 +22,7 @@ scene:
             color: {r: 1, g: 0.0, b: 0}
       - node:
          - lcs : {x: 0, y: 0, z: -2, h: 0, p: 0, r: 0}
-         - triangle: {x0: 0, y0: 0, z0: 0, x1: 2, y1: 0, z1: 0, x2: 0, y2: 2, z2: 0}
+         - triangle: {x0: 0, y0: 0, z0: 2, x1: 2, y1: 0, z1: 0, x2: 0, y2: 2, z2: 0}
          - material:
             color: {r: 0.9, g: 0, b: 0.5}
 

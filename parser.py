@@ -2,7 +2,7 @@ __author__ = 'ivan'
 
 from yaml import load_all
 from camera import Camera
-from objects import Sphere, Triangle, Plane
+from objects import Sphere, Triangle, Plane, CSG, CSGTree, CSGNode
 from scene import Scene
 from lights import PointLight
 import numpy as np
@@ -46,6 +46,20 @@ def lcs_to_transformation_matrix(lcs):
     return build_transformation_matrix(h, p, r, x, y, z)
 
 
+def parse_CSGNode(csgnode_yml):
+    if 'op' in csgnode_yml[0]:
+        op = csgnode_yml[0]['op']
+        left_subtree = csgnode_yml[1]['left']
+        right_subtree = csgnode_yml[2]['right']
+        return CSGNode(op, left=parse_CSGNode(left_subtree), right=parse_CSGNode(right_subtree))
+    else:
+        # It's object
+        objs = _explore_node(csgnode_yml)
+        if len(objs) > 1:
+            raise RuntimeError("It's not allowed to create > 1 node in CSG")
+        return CSGNode(obj=objs[0])
+
+
 def get_object(node_yml):
     if 'sphere' in node_yml:
         sphere_yml = node_yml['sphere']
@@ -60,6 +74,10 @@ def get_object(node_yml):
         p1 = np.array([triangle_yml['x1'], triangle_yml['y1'], triangle_yml['z1']])
         p2 = np.array([triangle_yml['x2'], triangle_yml['y2'], triangle_yml['z2']])
         return Triangle(p0, p1, p2)
+    elif 'csg' in node_yml:
+        csg_yml = node_yml['csg']
+        node = parse_CSGNode(csg_yml)
+        return CSG(CSGTree(node))
 
     raise RuntimeError("Found not supported type of object")
 
@@ -93,6 +111,9 @@ def transform_object(obj, transform_matrix):
         obj.origin = transform_3d_point(obj.origin)
         obj.normal = transform_3d_vector(obj.normal)
         return obj
+    elif isinstance(obj, CSG):
+        # We are taking all the transformations from inner nodes
+        return obj
 
 
 def _explore_node(node_yml):
@@ -100,8 +121,10 @@ def _explore_node(node_yml):
 
     transform_matrix = lcs_to_transformation_matrix(node_yml[0]['lcs'])
     cur_object = get_object(node_yml[1])
+
     color = node_yml[2]['material']['color']
     cur_object.color = np.array([color['r'], color['g'], color['b']])
+
     objs.append(cur_object)
 
     for i in range(3, len(node_yml)):
