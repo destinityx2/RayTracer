@@ -129,6 +129,7 @@ class CSGTree:
 class CSGNode:
     UNION_OPERATION = "union"
     INTERSECTION_OPERATION = "intersection"
+    DIFFERENCE_OPERATION = "difference"
 
     def __init__(self, op=None, obj=None, left=None, right=None):
         self.op = op
@@ -176,6 +177,8 @@ class CSG(Object):
                 res.extend(self._union_op(left_intervals, right_intervals))
             elif op == CSGNode.INTERSECTION_OPERATION:
                 res.extend(self._intersection_op(left_intervals, right_intervals))
+            elif op == CSGNode.DIFFERENCE_OPERATION:
+                res.extend(self._difference_op(left_intervals, right_intervals))
             else:
                 raise RuntimeError("{} is unsupported type of operation for CSG".format(op))
 
@@ -221,3 +224,54 @@ class CSG(Object):
                 res.append(tmp)
 
         return res
+
+    def _difference_op(self, left_intervals, right_intervals):
+        if len(right_intervals) == 0:
+            return left_intervals
+        res = []
+        for left_interval in left_intervals:
+            tmp = left_interval
+            for right_interval in right_intervals:
+                if len(tmp) == 0:
+                    break
+
+                [(t0, obj0), (t1, obj1)] = tmp
+                [(t2, obj2), (t3, obj3)] = right_interval
+                m0 = max(t0, t2)
+                m1 = min(t1, t3)
+                if m0 > m1:
+                    # There is no intersection
+                    pass
+                else:
+                    new_t0, new_t1 = 0, 0
+                    if t0 < m0 < m1 < t1:
+                        # intersection inside
+                        tmp = []
+                        left_intervals.append([(t0, obj0), (m0, obj1)])
+                        left_intervals.append([(m1, obj0), (t1, obj1)])
+                        break
+                    elif _eq(t0, m0) and _eq(m1, t1) and t0 < t1:
+                        tmp = []
+                        break
+                    elif _eq(t0, m0) and t0 < m1 < t1:
+                        new_t0 = m1
+                        new_t1 = t1
+                    elif t0 < m0 < m1 and _eq(m1, t1):
+                        new_t0 = t0
+                        new_t1 = m0
+                    elif _eq(m0, m1):
+                        new_t0 = t0
+                        new_t1 = t1
+                    else:
+                        print("Not supported case: ({},{},{},{}), ({},{})".format(t0, m0, m1, t1, _eq(t0, m0), _eq(m1, t1)))
+
+                    tmp = [(new_t0, obj0), (new_t1, obj1)]
+
+            if len(tmp) > 0:
+                res.append(tmp)
+
+        return res
+
+
+def _eq(x, y, tol=1e-3):
+    return np.abs(x - y) < tol
