@@ -1,4 +1,5 @@
 # RayTracer
+Implementation of the Ray Tracing algorithm in Python.
 
 The program has the following syntax:
 
